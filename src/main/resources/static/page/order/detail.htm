@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>秒杀订单详情页面</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="/js/md5.min.js"></script>
+
+    <script src="/validation/jquery.validate.min.js"></script>
+    <script src="/validation/additional-methods.min.js"></script>
+    <script src="/validation/localization/messages_zh.min.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="panel-default">
+        <div class="panel-heading">秒杀订单详情</div>
+        <table class="table" id="order">
+            <tr>
+                <td>商品名称</td>
+                <td colspan="3" id="goodsName"></td>
+            </tr>
+            <tr>
+                <td>商品图片</td>
+                <td colspan="3"><img id="goodsImg" width="200" height="200" alt=""></td>
+            </tr>
+            <tr>
+                <td>订单价格</td>
+                <td colspan="3" id="goodsPrice"></td>
+            </tr>
+            <tr>
+                <td>下单时间</td>
+                <td colspan="3" id="createDate"></td>
+            </tr>
+            <tr>
+                <td>订单状态</td>
+                <td id="status">
+                    <!--<span th:if="${order.status eq 0}">未支付</span>
+                    <span th:if="${order.status eq 1}">待发货</span>
+                    <span th:if="${order.status eq 2}">已发货</span>
+                    <span th:if="${order.status eq 3}">已收款</span>
+                    <span th:if="${order.status eq 4}">已退款</span>
+                    <span th:if="${order.status eq 5}">已完成</span>-->
+                </td>
+                <td colspan="1">
+                    <button class="btn btn-info btn-block" type="submit" id="payButton">立即支付</button>
+                </td>
+            </tr>
+            <tr>
+                <td>收货人</td>
+                <td colspan="3">婕妤 15788888888</td>
+            </tr>
+            <tr>
+                <td>收货地址</td>
+                <td colspan="3">重庆市九龙坡区石桥铺同心花园</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script>
+    $(function () {
+        getDetail();
+    })
+
+    function getDetail() {
+        var orderId = g_getQueryString("orderId")
+        $.ajax({
+            url: '/sk/order/detail',
+            type: 'GET',
+            data: {
+                orderId: orderId
+            },
+            success: function(data) {
+                if(data.code == 200) {
+                    render(data.data)
+                } else alert("请求数据出现错误")
+            },
+            error: function() {
+                alert("请求数据出现错误")
+            }
+        })
+    }
+
+    function render(detail) {
+        var goods = detail.goodsVo
+        var order = detail.order;
+        $("#goodsName").text(goods.goodsName)
+        $("#goodsImg").attr("src", goods.goodsImg)
+        $("#goodsPrice").text(order.goodsPrice)
+        $("#createDate").text(new Date(order.createDate).format("yyyy-MM-dd HH:mm:ss"))
+        var status = order.status
+        var statusText = ""
+        switch (status) {
+            case 0:
+                statusText = "未支付"
+                break
+            case 1:
+                statusText = "待发货"
+                break
+            case 2:
+                statusText = "已发货"
+                break
+            case 3:
+                statusText = "已收货"
+                break
+            case 4:
+                statusText = "已退款"
+                break
+            case 5:
+                statusText = "已完成"
+                break
+        }
+        $("#status").text(statusText)
+    }
+</script>
+</body>
+</html>

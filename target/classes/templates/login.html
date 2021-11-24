@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/js/md5.min.js}"></script>
+
+    <script th:src="@{/validation/jquery.validate.min.js}"></script>
+    <script th:src="@{/validation/additional-methods.min.js}"></script>
+    <script th:src="@{/validation/localization/messages_zh.min.js}"></script>
+    <style>
+    </style>
+</head>
+<body>
+
+<form class="form-horizontal" role="form" id="form">
+    <div class="form-group"><h2 class="text-center">Login</h2></div>
+    <div class="form-group">
+        <label for="userName" class="col-sm-2 control-label">用户名</label>
+        <div class="col-sm-8">
+            <input type="text" class="form-control" id="userName" value="15736185289" placeholder="请输入用户名">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="password" class="col-sm-2 control-label">密码</label>
+        <div class="col-sm-8">
+            <input type="password" class="form-control" id="password" value="12345" placeholder="请输入密码">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-7">
+            <div class="checkbox">
+                <label for="rememberMe">
+                    <input type="checkbox" id="rememberMe">记住我
+                </label>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="checkbox ">
+                <a href="#" class="forgetPwd">忘记密码</a>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-8">
+            <button type="submit" id="login" class="btn btn-default" onclick="handleLogin()">登录</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+<script type="text/javascript">
+    function handleLogin() {
+        $("#form").validate({
+            submitHandler: function () {
+                doLogin();
+            }
+        })
+    }
+
+    function doLogin() {
+        // 获取输入框中的数据
+        let form = {}
+        let password = $("#password").val()
+        let salt = g_passsword_salt
+        let str = "" + salt.charAt(0) + salt.charAt(2) + password + salt.charAt(5) + salt.charAt(4)
+
+        form.userName = $("#userName").val()
+        form.password = md5(str)
+        console.log(form)
+        // $.post("http://localhost:8080/sk/login/loginUser", form, function (data, status) {
+        //     console.log(status)
+        //     console.log(data)
+        // })
+        $.ajax({
+            url: "/sk/login/loginUser",
+            type: "POST",
+            data: form,
+            success: function (data) {
+                if (data.code == 200) {
+                    console.log(data)
+                    window.location.href = "/sk/goods/toList"
+                } else console.log(data)
+            }
+        })
+    }
+</script>
+
+</body>
+</html>
